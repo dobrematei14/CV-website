@@ -182,13 +182,13 @@ const PortfolioWebsite = () => {
             </div>
 
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-[#8B5CF6] transition-colors">
+              <a href="https://github.com/dobrematei14/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-indigo-600 transition-colors">
                 <Github size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-[#8B5CF6] transition-colors">
+              <a href="https://www.linkedin.com/in/matei-alexandru-dobre-42b92b180/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-indigo-600 transition-colors">
                 <Linkedin size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-[#8B5CF6] transition-colors">
+              <a href="mailto:dobre.matei.ichb@gmail.com" className="text-gray-600 hover:text-indigo-600 transition-colors">
                 <Mail size={20} />
               </a>
             </div>
@@ -377,46 +377,56 @@ const PortfolioWebsite = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-[#8B5CF6] text-white">
+      <section id="contact" className="py-20 bg-indigo-600 text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-2">Get In Touch</h2>
           <p className="mb-12 opacity-90 max-w-2xl mx-auto">
             Interested in working together? Feel free to reach out for collaborations or just a friendly hello.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12 max-w-3xl mx-auto">
-            <div className="bg-black p-6 rounded-lg border border-white">
+          <div className="grid md:grid-cols-3 gap-6 mb-12 max-w-3xl mx-auto">
+            {/* Email Card */}
+            <a
+              href="mailto:dobre.matei.ichb@gmail.com"
+              className="bg-indigo-800 p-6 rounded-lg transition-all duration-300 hover:bg-indigo-900 hover:shadow-lg hover:-translate-y-1 group"
+            >
               <div className="flex justify-center mb-4">
-                <Mail size={28} />
+                <Mail size={32} className="text-indigo-300 group-hover:text-white transition-colors" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Email</h3>
-              <p className="opacity-90">dobre.matei.ichb@gmail.com</p>
-            </div>
+              <p className="opacity-90 truncate">dobre.matei.ichb@gmail.com</p>
+              <span className="mt-4 inline-block text-indigo-300 group-hover:text-white">Contact Me →</span>
+            </a>
 
-            <div className="bg-black p-6 rounded-lg border border-white">
+            {/* LinkedIn Card */}
+            <a
+              href="https://www.linkedin.com/in/matei-alexandru-dobre-42b92b180/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-indigo-800 p-6 rounded-lg transition-all duration-300 hover:bg-indigo-900 hover:shadow-lg hover:-translate-y-1 group"
+            >
               <div className="flex justify-center mb-4">
-                <Linkedin size={28} />
+                <Linkedin size={32} className="text-indigo-300 group-hover:text-white transition-colors" />
               </div>
               <h3 className="text-xl font-semibold mb-2">LinkedIn</h3>
-              <p className="opacity-90">https://www.linkedin.com/in/matei-alexandru-dobre-42b92b180/</p>
-            </div>
+              <p className="opacity-90">Matei Alexandru Dobre</p>
+              <span className="mt-4 inline-block text-indigo-300 group-hover:text-white">Connect →</span>
+            </a>
 
-            <div className="bg-black p-6 rounded-lg border border-white">
+            {/* GitHub Card */}
+            <a
+              href="https://github.com/dobrematei14"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-indigo-800 p-6 rounded-lg transition-all duration-300 hover:bg-indigo-900 hover:shadow-lg hover:-translate-y-1 group"
+            >
               <div className="flex justify-center mb-4">
-                <Github size={28} />
+                <Github size={32} className="text-indigo-300 group-hover:text-white transition-colors" />
               </div>
               <h3 className="text-xl font-semibold mb-2">GitHub</h3>
-              <p className="opacity-90">https://github.com/dobrematei14</p>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <SideHighlightButton
-              href="mailto:dobre.matei.ichb@gmail.com"
-              className="font-medium text-black"
-            >
-              Say Hello 👋
-            </SideHighlightButton>
+              <p className="opacity-90">dobrematei14</p>
+              <span className="mt-4 inline-block text-indigo-300 group-hover:text-white">View Projects →</span>
+            </a>
           </div>
         </div>
       </section>
