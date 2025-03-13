@@ -25,11 +25,20 @@ const PortfolioWebsite = () => {
     if (pdfPreviewUrl) return; // Only generate once
 
     try {
-      const loadingTask = pdfjsLib.getDocument('CV.pdf');
-      const pdf = await loadingTask.promise;
-      const page = await pdf.getPage(1); // Get first page
+      console.log('Attempting to load PDF...');
 
-      const viewport = page.getViewport({ scale: 0.5 }); // Adjust scale as needed
+      // Use the full path to the PDF file in your development environment
+      // In production, you might need to adjust this path
+      const pdfPath = '/website/build/CV.pdf'; // Update this path
+
+      const loadingTask = pdfjsLib.getDocument(pdfPath);
+      const pdf = await loadingTask.promise;
+      console.log('PDF loaded successfully');
+
+      const page = await pdf.getPage(1); // Get first page
+      console.log('Page 1 loaded');
+
+      const viewport = page.getViewport({ scale: 0.5 });
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
 
@@ -41,12 +50,28 @@ const PortfolioWebsite = () => {
         viewport: viewport
       };
 
+      console.log('Rendering PDF to canvas...');
       await page.render(renderContext).promise;
-      setPdfPreviewUrl(canvas.toDataURL());
+      console.log('PDF rendered to canvas');
+
+      const dataUrl = canvas.toDataURL();
+      console.log('Canvas converted to data URL');
+      setPdfPreviewUrl(dataUrl);
     } catch (error) {
       console.error('Error generating PDF preview:', error);
+      // Set a fallback message
+      console.log('Failed to load PDF. Check console for details.');
     }
   };
+
+  // Also update the Download button to use the correct path
+  <IconOnlyButton
+    icon={<Download size={20} />}
+    onClick={() => window.open('/website/build/CV.pdf', '_blank')}
+    className="min-w-40"
+  >
+    Download CV here
+  </IconOnlyButton>
 
   useEffect(() => {
     // Fetch GitHub repositories
@@ -179,43 +204,50 @@ const PortfolioWebsite = () => {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 bg-black shadow-md z-10 border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex justify-between items-center h-16">
-            <a href="#" className="text-xl font-bold text-[#8B5CF6]">Matei Alexandru Dobre</a>
-
-            <div className="hidden md:flex space-x-8">
-              <button
-                onClick={() => scrollToSection('home')}
-                className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'home' ? 'text-[#8B5CF6] font-medium' : ''}`}
-              >
-                Home
-              </button>
-              <button
-                onClick={() => scrollToSection('projects')}
-                className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'projects' ? 'text-[#8B5CF6] font-medium' : ''}`}
-              >
-                Projects
-              </button>
-              <button
-                onClick={() => scrollToSection('skills')}
-                className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'skills' ? 'text-[#8B5CF6] font-medium' : ''}`}
-              >
-                Skills
-              </button>
-              <button
-                onClick={() => scrollToSection('experience')}
-                className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'experience' ? 'text-[#8B5CF6] font-medium' : ''}`}
-              >
-                Experience
-              </button>
-              <button
-                onClick={() => scrollToSection('contact')}
-                className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'contact' ? 'text-[#8B5CF6] font-medium' : ''}`}
-              >
-                Contact
-              </button>
+          <div className="relative flex items-center h-16">
+            {/* Name aligned to left */}
+            <div className="absolute left-0">
+              <a href="#" className="text-xl font-bold text-[#8B5CF6]">Matei Alexandru Dobre</a>
             </div>
 
-            <div className="flex space-x-4">
+            {/* Navigation links centered on page */}
+            <div className="w-full flex justify-center">
+              <div className="hidden md:flex space-x-8">
+                <button
+                  onClick={() => scrollToSection('home')}
+                  className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'home' ? 'text-[#8B5CF6] font-medium' : ''}`}
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => scrollToSection('projects')}
+                  className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'projects' ? 'text-[#8B5CF6] font-medium' : ''}`}
+                >
+                  Projects
+                </button>
+                <button
+                  onClick={() => scrollToSection('skills')}
+                  className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'skills' ? 'text-[#8B5CF6] font-medium' : ''}`}
+                >
+                  Skills
+                </button>
+                <button
+                  onClick={() => scrollToSection('experience')}
+                  className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'experience' ? 'text-[#8B5CF6] font-medium' : ''}`}
+                >
+                  Experience
+                </button>
+                <button
+                  onClick={() => scrollToSection('contact')}
+                  className={`hover:text-[#8B5CF6] transition-colors ${activeSection === 'contact' ? 'text-[#8B5CF6] font-medium' : ''}`}
+                >
+                  Contact
+                </button>
+              </div>
+            </div>
+
+            {/* Social icons aligned to right */}
+            <div className="absolute right-0 flex space-x-4">
               <a href="https://github.com/dobrematei14/" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-indigo-600 transition-colors">
                 <Github size={20} />
               </a>
@@ -398,7 +430,7 @@ const PortfolioWebsite = () => {
             ))}
           </div>
 
-          <div className="text-center mt-8 relative group" onMouseEnter={generatePdfPreview}>
+          <div className="flex justify-center mt-8 relative group" onMouseEnter={generatePdfPreview}>
             {/* Hidden canvas for rendering PDF */}
             <canvas ref={canvasRef} style={{ display: 'none' }} />
 
@@ -407,7 +439,7 @@ const PortfolioWebsite = () => {
               onClick={() => window.open('CV.pdf', '_blank')}
               className="min-w-40"
             >
-              Download CV here
+              Preview CV
             </IconOnlyButton>
 
             {/* PDF Preview */}
