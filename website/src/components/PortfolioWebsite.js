@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Github, Mail, Linkedin, ChevronDown, ExternalLink, ArrowRight, Download } from 'lucide-react';
 import { GlowButton, TextMoveButton, TruncatedButton, SideHighlightButton, IconOnlyButton } from './ButtonComponents';
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
+
 
 
 const PortfolioWebsite = () => {
@@ -8,62 +11,93 @@ const PortfolioWebsite = () => {
   const [repos, setRepos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showScrollHint, setShowScrollHint] = useState(true);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState('');
+  const canvasRef = useRef(null);
 
   // Replace with your GitHub username
   const githubUsername = "dobrematei14";
 
   useEffect(() => {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+  }, []);
+
+  const generatePdfPreview = async () => {
+    if (pdfPreviewUrl) return; // Only generate once
+
+    try {
+      const loadingTask = pdfjsLib.getDocument('CV.pdf');
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(1); // Get first page
+
+      const viewport = page.getViewport({ scale: 0.5 }); // Adjust scale as needed
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+
+      await page.render(renderContext).promise;
+      setPdfPreviewUrl(canvas.toDataURL());
+    } catch (error) {
+      console.error('Error generating PDF preview:', error);
+    }
+  };
+
+  useEffect(() => {
     // Fetch GitHub repositories
     const fetchRepos = async () => {
+      setIsLoading(true);
       try {
-        // In a real application, you would fetch from the GitHub API
-        // For demo purposes, we'll use sample data
-        const sampleRepos = [
-          {
-            id: 1,
-            name: "awesome-project",
-            description: "A full-stack application with React and Node.js",
-            language: "JavaScript",
-            stargazers_count: 12,
-            forks_count: 5,
-            html_url: "#"
-          },
-          {
-            id: 2,
-            name: "data-visualizer",
-            description: "Interactive data visualization tool using D3.js",
-            language: "TypeScript",
-            stargazers_count: 8,
-            forks_count: 2,
-            html_url: "#"
-          },
-          {
-            id: 3,
-            name: "ml-experiments",
-            description: "Collection of machine learning experiments and models",
-            language: "Python",
-            stargazers_count: 15,
-            forks_count: 3,
-            html_url: "#"
-          },
-          {
-            id: 4,
-            name: "portfolio-website",
-            description: "Personal portfolio website with interactive elements",
-            language: "HTML/CSS",
-            stargazers_count: 6,
-            forks_count: 1,
-            html_url: "#"
-          }
-        ];
+        const response = await fetch(`https://api.github.com/users/${githubUsername}/repos`);
 
-        setRepos(sampleRepos);
+        if (!response.ok) {
+          throw new Error('Failed to fetch repositories');
+        }
+
+        let repos = await response.json();
+
+        // Sort repos by most recently updated
+        repos = repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+        // Only take the first 4-6 repos to display
+        repos = repos.slice(0, 6);
+
+        setRepos(repos);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching repositories:", error);
         setIsLoading(false);
+
+        // Fallback to the specific repos we know about if the API fails
+        const fallbackRepos = [
+          {
+            id: 1,
+            name: "GAN-based-Sensor-Pattern-Noise-Restoration",
+            description: "Research project implementing GAN architectures for sensor pattern noise restoration",
+            language: "Python",
+            stargazers_count: 0,
+            forks_count: 0,
+            html_url: "https://github.com/dobrematei14/GAN-based-Sensor-Pattern-Noise-Restoration"
+          },
+          {
+            id: 2,
+            name: "CV-website",
+            description: "Personal portfolio and CV website built with React and Tailwind CSS",
+            language: "JavaScript",
+            stargazers_count: 0,
+            forks_count: 0,
+            html_url: "https://github.com/dobrematei14/CV-website"
+          }
+        ];
+        setRepos(fallbackRepos);
       }
     };
+
 
     fetchRepos();
 
@@ -364,14 +398,35 @@ const PortfolioWebsite = () => {
             ))}
           </div>
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-8 relative group" onMouseEnter={generatePdfPreview}>
+            {/* Hidden canvas for rendering PDF */}
+            <canvas ref={canvasRef} style={{ display: 'none' }} />
+
             <IconOnlyButton
               icon={<Download size={20} />}
-              onClick={() => {/* Your download function here */ }}
+              onClick={() => window.open('CV.pdf', '_blank')}
               className="min-w-40"
             >
               Download CV here
             </IconOnlyButton>
+
+            {/* PDF Preview */}
+            <div className="absolute left-1/2 bottom-full mb-2 transform -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none z-10">
+              <div className="bg-gray-900 p-2 rounded shadow-lg border border-[#8B5CF6]">
+                {pdfPreviewUrl ? (
+                  <img
+                    src={pdfPreviewUrl}
+                    alt="CV Preview"
+                    className="w-64 h-auto border border-gray-800"
+                  />
+                ) : (
+                  <div className="w-64 h-80 bg-gray-800 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#8B5CF6]"></div>
+                  </div>
+                )}
+              </div>
+              <div className="w-4 h-4 bg-gray-900 transform rotate-45 absolute -bottom-2 left-1/2 -ml-2 border-r border-b border-[#8B5CF6]"></div>
+            </div>
           </div>
         </div>
       </section>
