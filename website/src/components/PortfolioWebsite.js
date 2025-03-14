@@ -4,6 +4,7 @@ import { GlowButton, IconOnlyButton, TruncatedButton } from './ButtonComponents'
 import * as pdfjsLib from 'pdfjs-dist';
 import AutoRotatingCards from './stackedCards';
 import ExperienceSection from './experience';
+import FloatingIcons from './floatingIcons';
 
 
 // Create a proper worker configuration
@@ -225,6 +226,8 @@ const PortfolioWebsite = () => {
 
       {/* Hero Section */}
       <section id="home" className="min-h-screen flex items-center justify-center pt-16 relative">
+      <FloatingIcons />
+
         <div className="max-w-4xl mx-auto px-4 py-16 text-center">
           <div className="w-32 h-32 mx-auto mb-8 rounded-full bg-gray-900 flex items-center justify-center relative overflow-hidden border-2 border-[#8B5CF6]">
             {/* Profile image placeholder */}
@@ -259,17 +262,17 @@ const PortfolioWebsite = () => {
 
         {/* Scroll indicator */}
         {showScrollHint && (
-          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <button
-              onClick={() => scrollToSection('projects')}
-              className="flex flex-col items-center text-gray-400 hover:text-[#8B5CF6] transition-colors"
-            >
-              <span className="mb-2 text-sm">Scroll</span>
-              <ChevronDown size={24} />
-            </button>
-          </div>
-        )}
-      </section>
+    <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce z-10">
+      <button
+        onClick={() => scrollToSection('projects')}
+        className="flex flex-col items-center text-gray-400 hover:text-[#8B5CF6] transition-colors"
+      >
+        <span className="mb-2 text-sm">Scroll</span>
+        <ChevronDown size={24} />
+      </button>
+    </div>
+  )}
+</section>
 
       {/* GitHub Projects Section */}
       <AutoRotatingCards repos={repos} />
