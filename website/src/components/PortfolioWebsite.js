@@ -232,12 +232,16 @@ const PortfolioWebsite = () => {
 
         <div className="max-w-4xl mx-auto px-4 py-16 text-center">
           <div className="w-32 h-32 mx-auto mb-8 rounded-full bg-gray-900 flex items-center justify-center relative overflow-hidden border-2 border-[#8B5CF6]">
-            {/* Profile image placeholder */}
-            <div className="text-4xl font-bold text-[#8B5CF6]">MAD</div>
+          <img 
+    src={`${process.env.PUBLIC_URL}/images/profile.jpg`} 
+    alt="Matei Alexandru Dobre" 
+    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+  />
+  <div className="absolute inset-0 bg-[#8B5CF6] bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
 
           <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fadeIn">
-            Hi, I'm <span className="text-[#8B5CF6]">Matt</span>
+            Hi, I'm <span className="text-[#8B5CF6]">Matei</span>
           </h1>
 
           <div className="text-2xl md:text-3xl mb-8 text-gray-400">
