@@ -10,6 +10,8 @@ import FloatingIcons from './floatingIcons';
 // Create a proper worker configuration
 pdfjsLib.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.js`;
 
+
+
 const PortfolioWebsite = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [repos, setRepos] = useState([]);
@@ -262,17 +264,17 @@ const PortfolioWebsite = () => {
 
         {/* Scroll indicator */}
         {showScrollHint && (
-    <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce z-10">
-      <button
-        onClick={() => scrollToSection('projects')}
-        className="flex flex-col items-center text-gray-400 hover:text-[#8B5CF6] transition-colors"
-      >
-        <span className="mb-2 text-sm">Scroll</span>
-        <ChevronDown size={24} />
-      </button>
-    </div>
-  )}
-</section>
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <button
+              onClick={() => scrollToSection('projects')}
+              className="flex flex-col items-center text-gray-400 hover:text-[#8B5CF6] transition-colors"
+            >
+              <span className="mb-2 text-sm">Scroll</span>
+              <ChevronDown size={24} />
+            </button>
+          </div>
+        )}
+      </section>
 
       {/* GitHub Projects Section */}
       <AutoRotatingCards repos={repos} />

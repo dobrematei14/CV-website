@@ -6,6 +6,14 @@ const AutoRotatingCards = ({ repos }) => {
   const [isPaused, setIsPaused] = useState(false);
   const cardRefs = useRef({});
   const intervalRef = useRef(null);
+  
+  // Touch handling for swipe
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const containerRef = useRef(null);
+  
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
 
   // Initialize card refs
   useEffect(() => {
@@ -43,6 +51,53 @@ const AutoRotatingCards = ({ repos }) => {
     intervalRef.current = setInterval(() => {
       setActiveCardIndex(prevIndex => (prevIndex + 1) % repos.length);
     }, 5000);
+  };
+
+  // Go to previous card
+  const goToPrevCard = () => {
+    setActiveCardIndex(prevIndex => (prevIndex === 0 ? repos.length - 1 : prevIndex - 1));
+    resetAutoRotationTimer();
+  };
+
+  // Go to next card
+  const goToNextCard = () => {
+    setActiveCardIndex(prevIndex => (prevIndex + 1) % repos.length);
+    resetAutoRotationTimer();
+  };
+
+  // Reset auto rotation timer
+  const resetAutoRotationTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    intervalRef.current = setInterval(() => {
+      setActiveCardIndex(prevIndex => (prevIndex + 1) % repos.length);
+    }, 5000);
+  };
+
+  // Mobile touch handlers
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      goToNextCard();
+    } else if (isRightSwipe) {
+      goToPrevCard();
+    }
   };
 
   // Pause rotation on hover
@@ -98,11 +153,36 @@ const AutoRotatingCards = ({ repos }) => {
 
         {/* Card container - with position relative and lower z-index */}
         <div 
+          ref={containerRef}
           className="relative h-[400px] flex items-center justify-center"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          style={{ zIndex: 1 }} // Lower z-index than navbar
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          style={{ zIndex: 1, touchAction: 'pan-y' }} // Lower z-index than navbar
         >
+          {/* Visual swipe indicators for mobile - only visible when touched */}
+          {touchStart && !touchEnd && (
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none opacity-30">
+              <div className="bg-white rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </div>
+            </div>
+          )}
+          
+          {touchStart && !touchEnd && (
+            <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none opacity-30">
+              <div className="bg-white rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </div>
+            </div>
+          )}
+          
           {repos.map((repo, index) => (
             <div
               key={repo.id}
@@ -158,6 +238,31 @@ const AutoRotatingCards = ({ repos }) => {
               </div>
             </div>
           ))}
+
+          {/* Left/Right Arrow Navigation - visible on large screens/tablets */}
+          <div className="hidden sm:block absolute left-0 top-1/2 transform -translate-y-1/2 -ml-4">
+            <button
+              onClick={goToPrevCard}
+              className="bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all"
+              aria-label="Previous project"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <div className="hidden sm:block absolute right-0 top-1/2 transform -translate-y-1/2 -mr-4">
+            <button
+              onClick={goToNextCard}
+              className="bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all"
+              aria-label="Next project"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
         </div>
         
         {/* Navigation dots/progress indicator */}
@@ -173,6 +278,11 @@ const AutoRotatingCards = ({ repos }) => {
               ></button>
             ))}
           </div>
+        </div>
+
+        {/* Mobile swipe instructions - only visible on small screens */}
+        <div className="mt-4 text-center text-gray-500 text-sm sm:hidden">
+          <p>Swipe left or right to navigate projects</p>
         </div>
       </div>
     </section>
