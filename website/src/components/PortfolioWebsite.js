@@ -14,8 +14,15 @@ const PortfolioWebsite = () => {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState('');
   const canvasRef = useRef(null);
 
-  // Replace with your GitHub username
   const githubUsername = "dobrematei14";
+  
+  // List of pinned repository names to fetch
+  const pinnedRepoNames = [
+    "GAN-based-Sensor-Pattern-Noise-Restoration",
+    "CV-website",
+    "too-good-to-go-notification"
+    // Add other pinned repo names here
+  ];
 
   useEffect(() => {
     pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
@@ -27,9 +34,8 @@ const PortfolioWebsite = () => {
     try {
       console.log('Attempting to load PDF...');
 
-      // Use the full path to the PDF file in your development environment
-      // In production, you might need to adjust this path
-      const pdfPath = '/website/build/CV.pdf'; // Update this path
+      // Use the correct path to the PDF file in the public directory
+      const pdfPath = '/CV.pdf'; // Updated path to match public directory
 
       const loadingTask = pdfjsLib.getDocument(pdfPath);
       const pdf = await loadingTask.promise;
@@ -78,21 +84,34 @@ const PortfolioWebsite = () => {
     const fetchRepos = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`https://api.github.com/users/${githubUsername}/repos`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch repositories');
+        // Fetch pinned repositories one by one
+        const pinnedRepos = [];
+        
+        for (const repoName of pinnedRepoNames) {
+          const response = await fetch(`https://api.github.com/repos/${githubUsername}/${repoName}`);
+          
+          if (response.ok) {
+            const repoData = await response.json();
+            pinnedRepos.push(repoData);
+          }
         }
-
-        let repos = await response.json();
-
-        // Sort repos by most recently updated
-        repos = repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-
-        // Only take the first 4-6 repos to display
-        repos = repos.slice(0, 6);
-
-        setRepos(repos);
+        
+        // If no pinned repos were found, try fetching all repos as fallback
+        if (pinnedRepos.length === 0) {
+          const allReposResponse = await fetch(`https://api.github.com/users/${githubUsername}/repos`);
+          
+          if (allReposResponse.ok) {
+            let repos = await allReposResponse.json();
+            // Sort repos by most recently updated and take the first few
+            repos = repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at)).slice(0, 6);
+            setRepos(repos);
+          } else {
+            throw new Error('Failed to fetch repositories');
+          }
+        } else {
+          setRepos(pinnedRepos);
+        }
+        
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching repositories:", error);
@@ -436,7 +455,7 @@ const PortfolioWebsite = () => {
 
             <IconOnlyButton
               icon={<Download size={20} />}
-              onClick={() => window.open('CV.pdf', '_blank')}
+              onClick={() => window.open('/CV.pdf', '_blank')}
               className="min-w-40"
             >
               Preview CV
