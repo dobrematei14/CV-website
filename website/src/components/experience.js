@@ -4,13 +4,25 @@ const ExperienceSection = () => {
   // Updated work experience data based on the LinkedIn information
   const experiences = [
     {
+      company: "Sealcentre Pieterburen",
+      role: "Software Engineer Intern",
+      period: "Feb 2022 - Jun 2022 · 5 mos",
+      location: "Groningen, Groningen, Netherlands · Remote",
+      type: "Internship",
+      description: [
+        "Developed a machine learning model for seal survival prediction as part of a team project during a Software Engineering internship at Sealcentre Pieterburen.",
+        "Designed and implemented a user-friendly GUI to interact with the model, enhancing user experience and accessibility.",
+        "Collaborated with team members to ensure seamless integration of the ML model and GUI, showcasing teamwork and communication skills."
+      ],
+      technologies: ["Python", "Machine Learning", "GUI Development", "Team Collaboration"]
+    },
+    {
       company: "AGRICOVER",
       role: "Report Developer",
       period: "Jun 2019 - Sep 2019",
       location: "Bucharest, Romania · On-site",
       type: "Internship",
       description: "SQL-based Reporting Development for business use",
-      skills: ["Data Analysis", "Programming", "+4 skills"],
       technologies: ["SQL", "Data Analysis", "Reporting", "Business Intelligence"]
     }
   ];
@@ -34,16 +46,19 @@ const ExperienceSection = () => {
                 </div>
                 <div className="text-sm text-gray-400">{exp.period} · {exp.location}</div>
               </div>
-              <p className="text-gray-300 mb-4">{exp.description}</p>
               
-              {/* Skills section */}
-              <div className="flex items-center mb-4 text-sm text-gray-400">
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                {exp.skills.join(', ')}
-              </div>
+              {/* Description - handle both string and array formats */}
+              {typeof exp.description === 'string' ? (
+                <p className="text-gray-300 mb-4">{exp.description}</p>
+              ) : (
+                <ul className="text-gray-300 mb-4 list-disc ml-4">
+                  {exp.description.map((item, i) => (
+                    <li key={i} className="mb-2">{item}</li>
+                  ))}
+                </ul>
+              )}
               
+              {/* Technologies/skills tags */}
               <div className="flex flex-wrap gap-2">
                 {exp.technologies.map((tech, techIndex) => (
                   <span

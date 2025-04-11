@@ -172,17 +172,6 @@ const PortfolioWebsite = () => {
     { name: "JavaScript", level: 40 },    
   ];
 
-  // Work experience data
-  const experiences = [
-    {
-      company: "Agricover",
-      role: "Senior Frontend Developer",
-      period: "2022 - Present",
-      description: "Lead development of the company's flagship web application. Implemented new features and improved performance by 40%.",
-      technologies: ["React", "TypeScript", "Redux", "GraphQL"]
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       {/* Navigation */}
