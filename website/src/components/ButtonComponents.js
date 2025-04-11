@@ -82,27 +82,33 @@ export const SideHighlightButton = ({ children, className = '', ...props }) => {
 export const IconOnlyButton = ({ children, icon, className = '', ...props }) => {
     const [isHovered, setIsHovered] = useState(false);
 
-    // Calculate a fixed width based on the non-hovered state
     return (
         <button
-            className={`flex items-center justify-center px-6 py-3 rounded-full bg-[#8B5CF6] text-white transition-all duration-300 ${className}`}
+            className={`relative flex items-center justify-center px-6 py-3 rounded-full bg-[#8B5CF6] text-white transition-all duration-300 overflow-hidden ${className}`}
             style={{ width: '180px', height: '48px' }} // Fixed width and height
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             {...props}
         >
-            {!isHovered && (
-                <div className="flex items-center justify-center w-full">
-                    <span className="mr-2">{children}</span>
-                    <span>{icon || <ArrowRight size={20} />}</span>
-                </div>
-            )}
+            {/* Text container - slides out when hovered */}
+            <div 
+                className={`flex items-center justify-center w-full absolute top-0 left-0 h-full transition-transform duration-300 ease-in-out ${
+                    isHovered ? 'transform -translate-x-full opacity-0' : 'transform translate-x-0 opacity-100'
+                }`}
+            >
+                <span>{children}</span>
+            </div>
 
-            {isHovered && (
-                <div className="flex items-center justify-center w-full">
-                    {icon || <ArrowRight size={20} />}
-                </div>
-            )}
+            {/* Icon container - becomes visible when hovered */}
+            <div 
+                className={`flex items-center justify-center w-full absolute top-0 right-0 h-full transition-transform duration-300 ease-in-out ${
+                    isHovered ? 'transform translate-x-0 opacity-100' : 'transform translate-x-full opacity-0'
+                }`}
+            >
+                {icon || <ArrowRight size={20} />}
+            </div>
         </button>
     );
 };
+
+export default IconOnlyButton;

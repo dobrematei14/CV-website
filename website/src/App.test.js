@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+// Mock the PortfolioWebsite component to avoid PDF.js setup issues in tests
+jest.mock('./components/PortfolioWebsite', () => {
+  return function MockPortfolioWebsite() {
+    return <div data-testid="portfolio-website">Portfolio Website</div>;
+  };
+});
+
+test('renders portfolio website component', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const portfolioElement = screen.getByTestId('portfolio-website');
+  expect(portfolioElement).toBeInTheDocument();
 });
